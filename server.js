@@ -2,13 +2,10 @@
 const express = require('express');
 const app = express();
 
-// Permite que a API receba dados em formato JSON
 app.use(express.json());
 
-// Função auxiliar para tratar valores numéricos nulos/indefinidos e garantir decimais
+// Funções auxiliares de tratamento e precisão
 const v = (valor) => parseFloat(valor) || 0;
-
-// Função auxiliar para fixar 2 casas decimais e retornar como número
 const fix = (valor) => Number(v(valor).toFixed(2));
 
 // ENDPOINT PRINCIPAL DE CÁLCULO
@@ -25,8 +22,14 @@ app.post('/api/calcular-tributos', (req, res) => {
         vlTribut 
     } = req.body;
 
+    // VALIDACÃO 1: Cenário obrigatório
     if (!cenario) {
         return res.status(400).json({ erro: "O campo 'cenario' é obrigatório." });
+    }
+
+    // VALIDAÇÃO 2: Preço de venda deve ser maior que zero (Regra do Varejo)
+    if (v(pVenda) <= 0) {
+        return res.status(400).json({ erro: "Preço de venda inválido. O valor deve ser maior que zero." });
     }
 
     let resultado = { cenario };
@@ -44,10 +47,9 @@ app.post('/api/calcular-tributos', (req, res) => {
             resultado.vlIS = fix(resultado.baseIS * (v(aliquotaIS) / 100));
             break;
 
-        case 'padraoRedParcial': // CBS/IBS - BASECBSIBS_1 com Redução de Alíquota
+        case 'padraoRedParcial': // CBS/IBS - BASECBSIBS_1 com Redução
             resultado.baseCBS_IBS = fix(pVenda);
             
-            // Calcula as alíquotas aplicando o percentual de redução
             const cbsReduzida = v(cbs) * (1 - v(cbsRed) / 100);
             const ibsReduzida = v(ibs) * (1 - v(ibsRed) / 100);
             
@@ -57,21 +59,20 @@ app.post('/api/calcular-tributos', (req, res) => {
             resultado.vlIBS = fix(resultado.baseCBS_IBS * (ibsReduzida / 100));
             break;
 
-        case 'padraoBase_2': // CBS/IBS - BASECBSIBS_2 (Com acréscimos e exclusão de tributos)
+        case 'padraoBase_2': // CBS/IBS - BASECBSIBS_2
             resultado.baseCBS_IBS = fix((v(pVenda) + v(vlAcres)) - v(vlTribut));
             resultado.vlCBS = fix(resultado.baseCBS_IBS * (v(cbs) / 100));
             resultado.vlIBS = fix(resultado.baseCBS_IBS * (v(ibs) / 100));
             break;
 
-        case 'padraoBaseIS_2': // IS - BASEIS_2 (Com acréscimos e exclusão de tributos)
+        case 'padraoBaseIS_2': // IS - BASEIS_2
             resultado.baseIS = fix((v(pVenda) + v(vlAcres)) - v(vlTribut));
             resultado.vlIS = fix(resultado.baseIS * (v(aliquotaIS) / 100));
             break;
 
-        case 'redBase_2': // CBS/IBS - BASECBSIBS_2 com Redução de Alíquota
+        case 'redBase_2': // CBS/IBS - BASECBSIBS_2 com Redução
             resultado.baseCBS_IBS = fix((v(pVenda) + v(vlAcres)) - v(vlTribut));
             
-            // Calcula as alíquotas aplicando o percentual de redução
             const cbsReduzida2 = v(cbs) * (1 - v(cbsRed) / 100);
             const ibsReduzida2 = v(ibs) * (1 - v(ibsRed) / 100);
             
@@ -85,11 +86,9 @@ app.post('/api/calcular-tributos', (req, res) => {
             return res.status(400).json({ erro: "Cenário de cálculo não reconhecido." });
     }
 
-    // Retorna a resposta final estruturada
     return res.json(resultado);
 });
 
-// Inicializa o servidor local na porta 3000
 const PORT = 3000;
 app.listen(PORT, () => {
     console.log(`API da Reforma Tributária rodando na porta ${PORT}`);
