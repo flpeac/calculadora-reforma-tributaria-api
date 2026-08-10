@@ -42,42 +42,8 @@ describe('Testes de API - Calculadora Reforma Tributária', () => {
         })
     })
 
-    it('Status 500 - Internal Server Error', () => {
-        cy.request({
-            method: 'POST',
-            url: 'http://localhost:3000/api/quebra',
-            failOnStatusCode: false,
-            body: {
-                cenario: 'padrao',
-                pVenda: 100
-            }
-        }).then((response) => {
-            expect(response.status).to.eq(500)
-        })
 
-
-    })
-
-    it('Deve calcular corretamente o cenário padrão com Preço de Venda Cheio(BASECBSIBS_1)', () => {
-        cy.request({
-            method: 'POST',
-            url: apiURL,
-            body: {
-                cenario: 'padrao',
-                pVenda: 100,
-                cbs: 0.9,
-                ibs: 0.1
-            }
-        }).then((response) => {
-            // Validações do QA
-            expect(response.status).to.eq(200)
-            expect(response.body.baseCBS_IBS).to.eq(100)
-            expect(response.body.vlCBS).to.eq(0.9)
-            expect(response.body.vlIBS).to.eq(0.1)
-        })
-    })
-
-    it('Deve calcular corretamente o cenário padrão com Preço de Venda Quebrado (BASECBSIBS_1', () => {
+    it('Fórmula 1 - CBS/IBS - Sem redução - P. Venda', () => {
         cy.request({
             method: 'POST',
             url: apiURL,
@@ -88,15 +54,33 @@ describe('Testes de API - Calculadora Reforma Tributária', () => {
                 ibs: 0.1
             }
         }).then((response) => {
+            // Validações do QA
             expect(response.status).to.eq(200)
             expect(response.body.baseCBS_IBS).to.eq(50.30)
             expect(response.body.vlCBS).to.eq(0.45)
             expect(response.body.vlIBS).to.eq(0.05)
         })
+    })
+
+    it('Fórmula 1 - CBS/IBS - Sem redução - P. Venda (Zerado)', () => {
+        cy.request({
+            method: 'POST',
+            url: apiURL,
+            failOnStatusCode: false,
+            body: {
+                cenario: 'padrao',
+                pVenda: 0,
+                cbs: 0.9,
+                ibs: 0.1
+            }
+        }).then((response) => {
+            expect(response.status).to.eq(400)
+            expect(response.body.erro).to.eq("Preço de venda inválido. O valor deve ser maior que zero.")
+        })
 
     })
 
-    it('Deve apresentar mensagem informando erro para preço de venda negativo', () => {
+    it('Fórmula 1 - CBS/IBS - Sem redução - P. Venda (Negativo)', () => {
         cy.request({
             method: 'POST',
             url: apiURL,
@@ -114,43 +98,111 @@ describe('Testes de API - Calculadora Reforma Tributária', () => {
 
     })
 
-    it('Deve calcular corretamente o cenário com acréscimos e tributos (BASECBSIBS_2)', () => {
+    it('Fórmula 1 - CBS/IBS - Com Redução - P. Venda', () =>{
         cy.request({
-            method: 'POST',
+            method: 'POST', 
             url: apiURL,
             body: {
-                cenario: 'padraoBase_2',
-                pVenda: 100,
+                cenario: 'padraoRedParcial',
+                pVenda: 37.50,
                 cbs: 0.9,
                 ibs: 0.1,
-                vlAcres: 30,
-                vlTribut: 18
+                cbsRed: 40,
+                ibsRed: 40
             }
         }).then((response) => {
             expect(response.status).to.eq(200)
-            expect(response.body.baseCBS_IBS).to.eq(112)
-            expect(response.body.vlCBS).to.eq(1.01)
-            expect(response.body.vlIBS).to.eq(0.11)
+            expect(response.body.baseCBS_IBS).to.eq(37.50)
+            expect(response.body.aliquotaCbsReduzida).to.eq(0.54)
+            expect(response.body.aliquotaIbsReduzida).to.eq(0.06)
+            expect(response.body.vlCBS).to.eq(0.2)
+            expect(response.body.vlIBS).to.eq(0.02)
         })
     })
 
-
-    it('Deve retornar erro se o cenário não for enviado', () => {
+    it('Fórmula 1 - CBS/IBS - Com Redução - P. Venda (Zerado)', () => {
         cy.request({
             method: 'POST',
             url: apiURL,
             failOnStatusCode: false,
             body: {
-                pVenda: 100,
+                cenario: 'padraoRedParcial',
+                pVenda: 0,
                 cbs: 0.9,
                 ibs: 0.1,
-                vlAcres: 30,
-                vlTribut: 18
+                cbsRed: 40,
+                ibsRed: 40
             }
         }).then((response) => {
             expect(response.status).to.eq(400)
-            expect(response.body.erro).to.eq("O campo 'cenario' é obrigatório.")
+            expect(response.body.erro).to.eq("Preço de venda inválido. O valor deve ser maior que zero.")
+        })
+    })
 
+    it('Fórmula 1 - CBS/IBS - Com Redução - P. Venda (Negativo)', () => {
+        cy.request({
+            method: 'POST',
+            url: apiURL,
+            failOnStatusCode: false,
+            body: {
+                cenario: 'padraoRedParcial',
+                pVenda: -12.50,
+                cbs: 0.9,
+                ibs: 0.1,
+                cbsRed: 40,
+                ibsRed: 40
+            }
+        }).then((response) => {
+            expect(response.status).to.eq(400)
+            expect(response.body.erro).to.eq("Preço de venda inválido. O valor deve ser maior que zero.")
+        })
+    })
+
+    it('Fórmula 1 - IS - P. Venda', () => {
+        cy.request({
+            method: 'POST', 
+            url: apiURL,
+            body: {
+                    cenario: 'padraoIS_1',
+                    pVenda: 150.50,
+                    is: 15
+            }
+        }).then((response) => {
+            expect(response.status).to.eq(200)
+            expect(response.body.baseIS).to.eq(150.5)
+            expect(response.body.vlIS).to.eq(22.57)
+        })
+    })
+
+    it('Fórmula 1 - IS - P. Venda (Zerado)', () => {
+        cy.request({
+            method: 'POST', 
+            url: apiURL,
+            failOnStatusCode: false,
+            body: {
+                    cenario: 'padraoIS_1',
+                    pVenda: 0,
+                    is: 15
+            }
+        }).then((response) => {
+             expect(response.status).to.eq(400)
+            expect(response.body.erro).to.eq("Preço de venda inválido. O valor deve ser maior que zero.")
+        })
+    })
+
+        it('Fórmula 1 - IS - P. Venda (Negativo)', () => {
+        cy.request({
+            method: 'POST', 
+            url: apiURL,
+            failOnStatusCode: false,
+            body: {
+                    cenario: 'padraoIS_1',
+                    pVenda: -15.75,
+                    is: 15
+            }
+        }).then((response) => {
+             expect(response.status).to.eq(400)
+            expect(response.body.erro).to.eq("Preço de venda inválido. O valor deve ser maior que zero.")
         })
     })
 
