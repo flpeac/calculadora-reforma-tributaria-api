@@ -1,4 +1,4 @@
-# 🧮 Calculadora Reforma Tributária - API
+# 🚧 Projeto em construção - 🧮 Calculadora Reforma Tributária - API
 
 API desenvolvida em Node.js para cálculo, simulação e validação das regras da Reforma Tributária, com suporte a testes automatizados usando Cypress.
 
