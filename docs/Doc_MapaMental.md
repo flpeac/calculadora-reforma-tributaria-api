@@ -11,7 +11,8 @@ Ter uma visão arquitetural e estruturada para garantir a confiabilidade da API,
 ## 🗺️ Visualização
 
 <div align="center">
-  <img width="1460" height="1650" alt="Reforma Tributária" src="https://github.com/user-attachments/assets/abc34a8e-d1aa-4da0-a7eb-2b43bff8a875" />
+  <img width="1460" height="1650" alt="Reforma Tributária (1)" src="https://github.com/user-attachments/assets/754bdde3-5b60-4647-bde7-6061cbcf29dd" />
+
 </div>
 
 ## 🛠️ Como este mapa guiou a automação?
