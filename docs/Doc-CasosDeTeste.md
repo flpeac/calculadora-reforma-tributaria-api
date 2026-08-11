@@ -28,22 +28,22 @@
       </ul>
     </td>
     <td valign="top">
-<pre><code class="language-gherkin">Funcionalidade: Disponibilidade da API (Health Check)
-  Como um desenvolvedor ou analista de testes
-  Quero enviar uma requisição para a rota de verificação
-  Para validar se a API está rodando corretamente
-
-  Contexto:
-    Dado que o ambiente Node.js está instalado na máquina
-    E as dependências do projeto estão instaladas
-    E o framework Cypress está configurado para execução
-
-  Cenário: Status 200 - Sucesso
-    Dado que a API está ativa localmente rodando o arquivo "server.js" em "http://localhost:3000"
-    Quando eu enviar uma requisição do tipo POST com o nome do cenário e um preço de venda para a rota principal "/"
-    Então o servidor deve retornar o Status Code 200
-    E o tempo de resposta deve estar dentro do limite aceitável
-</code></pre>
+      <br>
+      <b>Funcionalidade:</b> Disponibilidade da API (Health Check)<br>
+      &emsp;&emsp;Como um desenvolvedor ou analista de testes<br>
+      &emsp;&emsp;Quero enviar uma requisição para a rota de verificação<br>
+      &emsp;&emsp;Para validar se a API está rodando corretamente<br>
+      <br>
+      <b>Contexto:</b><br>
+      &emsp;&emsp;<b>Dado</b> que o ambiente Node.js está instalado na máquina<br>
+      &emsp;&emsp;<b>E</b> as dependências do projeto estão instaladas<br>
+      &emsp;&emsp;<b>E</b> o framework Cypress está configurado para execução<br>
+      <br>
+      <b>Cenário:</b> Status 200 - Sucesso<br>
+      &emsp;&emsp;<b>Dado</b> que a API está ativa localmente rodando o arquivo "server.js" em "http://localhost:3000"<br>
+      &emsp;&emsp;<b>Quando</b> eu enviar uma requisição do tipo POST com o nome do cenário e um preço de venda para a rota principal "/"<br>
+      &emsp;&emsp;<b>Então</b> o servidor deve retornar o Status Code 200<br>
+      &emsp;&emsp;<b>E</b> o tempo de resposta deve estar dentro do limite aceitável<br>
     </td>
   </tr>
 </table>
