@@ -11,7 +11,10 @@ describe('Testes de API - Calculadora Reforma Tributária', () => {
                 pVenda: 100
             }
         }).then((response) => {
+            // Valida o status code
             expect(response.status).to.eq(200)
+            // Valida se o tempo de resposta é aceitável (ex: menos de 500ms)
+            expect(response.duration).to.be.lessThan(500)
         })
     })
 
