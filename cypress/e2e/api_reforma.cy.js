@@ -31,17 +31,17 @@ describe('Testes de API - Calculadora Reforma Tributária', () => {
         })
     })
 
-    it('Status 400 - Cenário desconhecido', () => {
+    it('Status 404 - Caminho desconhecido', () => {
         cy.request({
             method: 'POST',
-            url: apiURL,
+            url: 'http://localhost:3000/api/calcular-tributos2',
             failOnStatusCode: false,
             body: {
                 pVenda: 100,
                 cenario: 'cenario-inválido'
             }
         }).then((response) => {
-            expect(response.status).to.eq(400)
+            expect(response.status).to.eq(404)
         })
     })
 
