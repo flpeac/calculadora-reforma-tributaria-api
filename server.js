@@ -8,6 +8,13 @@ app.use(express.json());
 const v = (valor) => parseFloat(valor) || 0;
 const fix = (valor) => Number(v(valor).toFixed(2));
 
+// Regra de negócio: base de cálculo não pode ser negativa.
+// Se o resultado for <= 0, a base (e consequentemente os tributos) deve ser zerada.
+const baseValida = (valor) => {
+    const base = fix(valor);
+    return base > 0 ? base : 0;
+};
+
 // ENDPOINT PRINCIPAL DE CÁLCULO
 app.post('/api/calcular-tributos', (req, res) => {
     const { 
@@ -60,18 +67,18 @@ app.post('/api/calcular-tributos', (req, res) => {
             break;
 
         case 'padraoBase_2': // CBS/IBS - BASECBSIBS_2
-            resultado.baseCBS_IBS = fix((v(pVenda) + v(vlAcres)) - v(vlTribut));
+            resultado.baseCBS_IBS = baseValida((v(pVenda) + v(vlAcres)) - v(vlTribut));
             resultado.vlCBS = fix(resultado.baseCBS_IBS * (v(cbs) / 100));
             resultado.vlIBS = fix(resultado.baseCBS_IBS * (v(ibs) / 100));
             break;
 
         case 'padraoBaseIS_2': // IS - BASEIS_2
-            resultado.baseIS = fix((v(pVenda) + v(vlAcres)) - v(vlTribut));
+            resultado.baseIS = baseValida((v(pVenda) + v(vlAcres)) - v(vlTribut));
             resultado.vlIS = fix(resultado.baseIS * (v(aliquotaIS) / 100));
             break;
 
         case 'redBase_2': // CBS/IBS - BASECBSIBS_2 com Redução
-            resultado.baseCBS_IBS = fix((v(pVenda) + v(vlAcres)) - v(vlTribut));
+            resultado.baseCBS_IBS = baseValida((v(pVenda) + v(vlAcres)) - v(vlTribut));
             
             const cbsReduzida2 = v(cbs) * (1 - v(cbsRed) / 100);
             const ibsReduzida2 = v(ibs) * (1 - v(ibsRed) / 100);
