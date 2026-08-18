@@ -537,3 +537,9 @@ Esta documentação detalha todos os cenários de teste automatizados de regras 
     </td>
   </tr>
 </table>
+
+---
+
+<div align="center">
+  <a href="../README.md">⬅️ Voltar para o Início (README)</a>
+</div>
