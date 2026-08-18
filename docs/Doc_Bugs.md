@@ -1,11 +1,31 @@
-#  🕷[BUG] Cálculo incorreto de tributos (CBS/IBS) ao aplicar Acréscimo Negativo - Cenário Fórmula 2
+# 🕷️ Registro de Bugs e Defeitos - API Reforma Tributária
 
-## 📝 Descrição do Defeito
+Este documento serve como repositório central para o registro, evidência e acompanhamento de defeitos encontrados durante os ciclos de teste da API. Cada novo bug deve seguir a estrutura abaixo.
+
+---
+
+## 📋 Template de Abertura de Bug
+*Copie o bloco abaixo para registrar um novo item:*
+
+> **Título:** [Resumo breve do defeito]
+> **Data:** [DD/MM/AAAA]
+> **Prioridade:** [Alta/Média/Baixa]
+> **Descrição:** [O que acontece vs. O que deveria acontecer]
+> **Payload:** [Código JSON do request]
+> **Evidências:** [Prints, logs ou links]
+
+---
+
+## 🕷️ Bug Report #001: Cálculo incorreto de tributos (CBS/IBS) ao aplicar Acréscimo Negativo - Cenário Fórmula 2
+
+**Data:** 18/08/2026
+**Prioridade:** Alta
+
+### 📝 Descrição do Defeito
 Foi identificado um defeito no cálculo da API para o cenário **Fórmula 2 - CBS/IBS - Sem Redução - P.Venda + (Acréscimo (Negativo) + Valor de Tributos)**.
-
 Ao enviar um valor de acréscimo negativo (`vlAcres`), a API está calculando e retornando valores negativos para a base de cálculo e para os tributos (`baseCBS_IBS`, `vlCBS`, `vlIBS`). 
 
-> **Regra de Negócio / Fiscal:** De acordo com a legislação e regra fiscal vigente, **não podem existir valores de tributos negativos**. Caso a base de cálculo resulte em valor menor ou igual a zero, os valores de tributos devem ser zerados (`0.00`).
+> **Regra de Negócio / Fiscal:** De acordo com a legislação, **não podem existir valores de tributos negativos**. Caso a base de cálculo resulte em valor menor ou igual a zero, os valores de tributos devem ser zerados (`0.00`).
 
 ---
 

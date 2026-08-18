@@ -1,4 +1,4 @@
-# 🧮 Calculadora Reforma Tributária - API
+# 🧮 Calculadora Reforma Tributária - API (Ambiente de Testes)
 
 [![CI - API Reforma Tributária & Cypress](https://github.com/flpeac/calculadora-reforma-tributaria-api/actions/workflows/ci.yml/badge.svg)](https://github.com/flpeac/calculadora-reforma-tributaria-api/actions/workflows/ci.yml)
 
@@ -8,8 +8,19 @@ API mockada em Node.js desenvolvida exclusivamente como ambiente de homologaçã
 
 ## 🚀 Acesse a Esteira de Testes
 Quer ver os testes rodando em tempo real na nuvem do GitHub? 
-1. Acesse a aba [GitHub Actions do Projeto](https://github.com/flpeac/calculadora-reforma-tributaria-api/actions).
+1. Acesse a aba <a href="https://github.com/flpeac/calculadora-reforma-tributaria-api/actions" target="_blank" rel="noopener noreferrer">GitHub Actions do Projeto</a>.
 2. Se quiser disparar uma execução manual, basta clicar no botão **"Run workflow"**.
+
+---
+
+## 📚 Documentação Técnica e Artefatos de QA
+
+Para garantir a rastreabilidade e a qualidade do projeto, toda a modelagem e especificação de testes está documentada abaixo:
+
+* 🧠 <a href="https://github.com/flpeac/calculadora-reforma-tributaria-api/blob/main/docs/Doc_MapaMental.md" target="_blank" rel="noopener noreferrer">Mapa Mental: Validações da API - Reforma Tributária</a>
+* 📄 <a href="https://github.com/flpeac/calculadora-reforma-tributaria-api/blob/main/docs/Doc_CasosDeTeste_API.md" target="_blank" rel="noopener noreferrer">Documentação de Casos de Teste - Contratos e Status de API</a>
+* 📄 <a href="https://github.com/flpeac/calculadora-reforma-tributaria-api/blob/main/docs/Doc_CasosDeTeste_C%C3%A1lculos.md" target="_blank" rel="noopener noreferrer">Documentação de Casos de Teste - Motor de Cálculo e Regras Fiscais</a>
+* 🕷️ <a href="https://github.com/flpeac/calculadora-reforma-tributaria-api/blob/main/docs/Doc_Bugs.md" target="_blank" rel="noopener noreferrer">Registro de Bugs: Template para abertura e evidências de bugs</a>
 
 ---
 
@@ -18,6 +29,7 @@ Quer ver os testes rodando em tempo real na nuvem do GitHub?
 * **Node.js**: Versão `v20.x` ou superior
 * **npm**: Versão `10.x` ou superior
 * **Git**: Para clonar o repositório
+
 
 ---
 
