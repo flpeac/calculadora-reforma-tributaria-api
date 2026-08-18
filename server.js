@@ -1,18 +1,18 @@
-// server.js
 const express = require('express');
 const app = express();
 
 app.use(express.json());
 
-// Funções auxiliares de tratamento e precisão
-const v = (valor) => parseFloat(valor) || 0;
-const fix = (valor) => Number(v(valor).toFixed(2));
+// Função auxiliar estrita para conversão numérica
+const toNumber = (val) => {
+    if (val === undefined || val === null || val === '') return NaN;
+    const num = Number(String(val).replace(',', '.'));
+    return isNaN(num) ? NaN : num;
+};
 
-// Regra de negócio: base de cálculo não pode ser negativa.
-// Se o resultado for <= 0, a base (e consequentemente os tributos) deve ser zerada.
+// Validação de base não negativa
 const baseValida = (valor) => {
-    const base = fix(valor);
-    return base > 0 ? base : 0;
+    return valor > 0 ? valor : 0;
 };
 
 // ENDPOINT PRINCIPAL DE CÁLCULO
@@ -29,65 +29,141 @@ app.post('/api/calcular-tributos', (req, res) => {
         vlTribut 
     } = req.body;
 
-    // VALIDACÃO 1: Cenário obrigatório
-    if (!cenario) {
-        return res.status(400).json({ erro: "O campo 'cenario' é obrigatório." });
-    }
-
-    // VALIDAÇÃO 2: Preço de venda deve ser maior que zero (Regra do Varejo)
-    if (v(pVenda) <= 0) {
-        return res.status(400).json({ erro: "Preço de venda inválido. O valor deve ser maior que zero." });
+    // 1. VALIDAÇÃO DE CONTRATO: Cenário obrigatório
+    if (!cenario || typeof cenario !== 'string') {
+        return res.status(400).json({ erro: "O campo 'cenario' é obrigatório e deve ser uma string." });
     }
 
     let resultado = { cenario };
 
     switch (cenario) {
-        
-        case 'padrao': // CBS/IBS - BASECBSIBS_1
-            resultado.baseCBS_IBS = fix(pVenda);
-            resultado.vlCBS = fix(resultado.baseCBS_IBS * (v(cbs) / 100));
-            resultado.vlIBS = fix(resultado.baseCBS_IBS * (v(ibs) / 100));
-            break;
+        case 'padrao': {
+            const vP = toNumber(pVenda);
+            const vCbs = toNumber(cbs);
+            const vIbs = toNumber(ibs);
 
-        case 'padraoIS_1': // IS - BASEIS_1
-            resultado.baseIS = fix(pVenda);
-            resultado.vlIS = fix(resultado.baseIS * (v(aliquotaIS) / 100));
-            break;
+            if (isNaN(vP) || isNaN(vCbs) || isNaN(vIbs)) {
+                return res.status(400).json({ erro: "Parâmetros inválidos. 'pVenda', 'cbs' e 'ibs' devem ser numéricos." });
+            }
+            if (vP <= 0) {
+                return res.status(422).json({ erro: "Preço de venda deve ser maior que zero." });
+            }
 
-        case 'padraoRedParcial': // CBS/IBS - BASECBSIBS_1 com Redução
-            resultado.baseCBS_IBS = fix(pVenda);
+            const base = vP;
+            resultado.baseCBS_IBS = Number(base.toFixed(2));
+            resultado.vlCBS = Number((base * (vCbs / 100)).toFixed(2));
+            resultado.vlIBS = Number((base * (vIbs / 100)).toFixed(2));
+            break;
+        }
+
+        case 'padraoIS_1': {
+            const vP = toNumber(pVenda);
+            const vIs = toNumber(aliquotaIS);
+
+            if (isNaN(vP) || isNaN(vIs)) {
+                return res.status(400).json({ erro: "Parâmetros inválidos. 'pVenda' e 'is' devem ser numéricos." });
+            }
+            if (vP <= 0) {
+                return res.status(422).json({ erro: "Preço de venda deve ser maior que zero." });
+            }
+
+            const base = vP;
+            resultado.baseIS = Number(base.toFixed(2));
+            resultado.vlIS = Number((base * (vIs / 100)).toFixed(2));
+            break;
+        }
+
+        case 'padraoRedParcial': {
+            const vP = toNumber(pVenda);
+            const vCbs = toNumber(cbs);
+            const vIbs = toNumber(ibs);
+            const vCbsRed = toNumber(cbsRed);
+            const vIbsRed = toNumber(ibsRed);
+
+            if (isNaN(vP) || isNaN(vCbs) || isNaN(vIbs) || isNaN(vCbsRed) || isNaN(vIbsRed)) {
+                return res.status(400).json({ erro: "Parâmetros numéricos obrigatórios ausentes ou inválidos para o cenário de redução." });
+            }
+            if (vP <= 0) {
+                return res.status(422).json({ erro: "Preço de venda deve ser maior que zero." });
+            }
+
+            const base = vP;
+            const cbsReduzida = vCbs * (1 - vCbsRed / 100);
+            const ibsReduzida = vIbs * (1 - vIbsRed / 100);
             
-            const cbsReduzida = v(cbs) * (1 - v(cbsRed) / 100);
-            const ibsReduzida = v(ibs) * (1 - v(ibsRed) / 100);
-            
+            resultado.baseCBS_IBS = Number(base.toFixed(2));
             resultado.aliquotaCbsReduzida = Number(cbsReduzida.toFixed(4));
             resultado.aliquotaIbsReduzida = Number(ibsReduzida.toFixed(4));
-            resultado.vlCBS = fix(resultado.baseCBS_IBS * (cbsReduzida / 100));
-            resultado.vlIBS = fix(resultado.baseCBS_IBS * (ibsReduzida / 100));
+            resultado.vlCBS = Number((base * (cbsReduzida / 100)).toFixed(2));
+            resultado.vlIBS = Number((base * (ibsReduzida / 100)).toFixed(2));
             break;
+        }
 
-        case 'padraoBase_2': // CBS/IBS - BASECBSIBS_2
-            resultado.baseCBS_IBS = baseValida((v(pVenda) + v(vlAcres)) - v(vlTribut));
-            resultado.vlCBS = fix(resultado.baseCBS_IBS * (v(cbs) / 100));
-            resultado.vlIBS = fix(resultado.baseCBS_IBS * (v(ibs) / 100));
+        case 'padraoBase_2': {
+            const vP = toNumber(pVenda);
+            const vCbs = toNumber(cbs);
+            const vIbs = toNumber(ibs);
+            const vAcres = toNumber(vlAcres);
+            const vTrib = toNumber(vlTribut);
+
+            if (isNaN(vP) || isNaN(vCbs) || isNaN(vIbs) || isNaN(vAcres) || isNaN(vTrib)) {
+                return res.status(400).json({ erro: "Parâmetros numéricos obrigatórios ausentes ou inválidos." });
+            }
+
+            // Regra da Base Composta: (P. Venda + Acréscimos) - Tributos
+            const baseCalculada = (vP + vAcres) - vTrib;
+            const base = baseValida(baseCalculada);
+
+            resultado.baseCBS_IBS = Number(base.toFixed(2));
+            resultado.vlCBS = Number((base * (vCbs / 100)).toFixed(2));
+            resultado.vlIBS = Number((base * (vIbs / 100)).toFixed(2));
             break;
+        }
 
-        case 'padraoBaseIS_2': // IS - BASEIS_2
-            resultado.baseIS = baseValida((v(pVenda) + v(vlAcres)) - v(vlTribut));
-            resultado.vlIS = fix(resultado.baseIS * (v(aliquotaIS) / 100));
+        case 'padraoBaseIS_2': {
+            const vP = toNumber(pVenda);
+            const vIs = toNumber(aliquotaIS);
+            const vAcres = toNumber(vlAcres);
+            const vTrib = toNumber(vlTribut);
+
+            if (isNaN(vP) || isNaN(vIs) || isNaN(vAcres) || isNaN(vTrib)) {
+                return res.status(400).json({ erro: "Parâmetros numéricos obrigatórios ausentes ou inválidos." });
+            }
+
+            const baseCalculada = (vP + vAcres) - vTrib;
+            const base = baseValida(baseCalculada);
+
+            resultado.baseIS = Number(base.toFixed(2));
+            resultado.vlIS = Number((base * (vIs / 100)).toFixed(2));
             break;
+        }
 
-        case 'redBase_2': // CBS/IBS - BASECBSIBS_2 com Redução
-            resultado.baseCBS_IBS = baseValida((v(pVenda) + v(vlAcres)) - v(vlTribut));
+        case 'redBase_2': {
+            const vP = toNumber(pVenda);
+            const vCbs = toNumber(cbs);
+            const vIbs = toNumber(ibs);
+            const vCbsRed = toNumber(cbsRed);
+            const vIbsRed = toNumber(ibsRed);
+            const vAcres = toNumber(vlAcres);
+            const vTrib = toNumber(vlTribut);
+
+            if (isNaN(vP) || isNaN(vCbs) || isNaN(vIbs) || isNaN(vCbsRed) || isNaN(vIbsRed) || isNaN(vAcres) || isNaN(vTrib)) {
+                return res.status(400).json({ erro: "Parâmetros numéricos obrigatórios ausentes ou inválidos." });
+            }
+
+            const baseCalculada = (vP + vAcres) - vTrib;
+            const base = baseValida(baseCalculada);
             
-            const cbsReduzida2 = v(cbs) * (1 - v(cbsRed) / 100);
-            const ibsReduzida2 = v(ibs) * (1 - v(ibsRed) / 100);
+            const cbsReduzida = vCbs * (1 - vCbsRed / 100);
+            const ibsReduzida = vIbs * (1 - vIbsRed / 100);
             
-            resultado.aliquotaCbsReduzida = Number(cbsReduzida2.toFixed(4));
-            resultado.aliquotaIbsReduzida = Number(ibsReduzida2.toFixed(4));
-            resultado.vlCBS = fix(resultado.baseCBS_IBS * (cbsReduzida2 / 100));
-            resultado.vlIBS = fix(resultado.baseCBS_IBS * (ibsReduzida2 / 100));
+            resultado.baseCBS_IBS = Number(base.toFixed(2));
+            resultado.aliquotaCbsReduzida = Number(cbsReduzida.toFixed(4));
+            resultado.aliquotaIbsReduzida = Number(ibsReduzida.toFixed(4));
+            resultado.vlCBS = Number((base * (cbsReduzida / 100)).toFixed(2));
+            resultado.vlIBS = Number((base * (ibsReduzida / 100)).toFixed(2));
             break;
+        }
 
         default:
             return res.status(400).json({ erro: "Cenário de cálculo não reconhecido." });

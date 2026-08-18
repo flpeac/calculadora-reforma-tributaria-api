@@ -8,7 +8,9 @@ describe('Testes de API - Calculadora Reforma Tributária', () => {
             url: apiURL,
             body: {
                 cenario: 'padrao',
-                pVenda: 100
+                pVenda: 100,
+                cbs: 1, 
+                ibs: 1
             }
         }).then((response) => {
             // Valida o status code
@@ -77,7 +79,7 @@ describe('Testes de API - Calculadora Reforma Tributária', () => {
                 ibs: 0.1
             }
         }).then((response) => {
-            expect(response.status, 'Status Code').to.eq(400)
+            expect(response.status, 'Status Code').to.eq(422)
             expect(response.body.erro).to.eq("Preço de venda inválido. O valor deve ser maior que zero.")
         })
 
@@ -380,22 +382,39 @@ describe('Testes de API - Calculadora Reforma Tributária', () => {
             }
 
             let errosEncontrados = []
-            
+
             Object.keys(esperado).forEach((campo) => {
-                if(retornoAPI[campo] !== esperado[campo]) {
+                if (retornoAPI[campo] !== esperado[campo]) {
                     errosEncontrados.push(`❌ ${campo}: esperado [${esperado[campo]}], mas veio [${retornoAPI[campo]}]`)
-                }else {
+                } else {
                     cy.log(`✅ ${campo} está correto: ${retornoAPI[campo]}`)
                 }
             })
 
-            if(errosEncontrados.length > 0){
+            if (errosEncontrados.length > 0) {
                 cy.then(() => {
                     throw new Error("\nDivergências encontradas nos cálculos: \n\n" + errosEncontrados.join('\n'))
                 })
             }
+        })
+    })
 
-
+    it('Fórmula 2 - CBS/IBS - Sem Redução - P. Venda Zerado', () => {
+        cy.request({
+            method: 'POST',
+            url: apiURL,
+            failOnStatusCode: false,
+            body: {
+                cenario: 'padraoBase_2',
+                pVenda: 0,
+                cbs: 0.9,
+                ibs: 0.1,
+                vlAcres: 12,
+                vlTribut: 2
+            }
+        }).then((response) => {
+            expect(response.status).to.eq(400)
+            expect(response.body.erro).to.eq('Preço de venda inválido. O valor deve ser maior que zero.')
         })
 
     })
