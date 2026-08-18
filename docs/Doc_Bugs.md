@@ -82,3 +82,8 @@ De acordo com a regra fiscal, quando o cálculo resultar em valor negativo ou ze
 <img width="1394" height="946" alt="Cypress" src="https://github.com/user-attachments/assets/a31d577a-b405-4bfd-ae3c-f7841642f802" />
 <img width="964" height="700" alt="Postman" src="https://github.com/user-attachments/assets/3746590b-250d-4ffb-a4d9-2ff57dfdcec9" />
 
+---
+
+<div align="center">
+  <a href="../README.md">⬅️ Voltar para o Início (README)</a>
+</div>
