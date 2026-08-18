@@ -27,5 +27,5 @@ jobs:
         uses: cypress-io/github-action@v6
         with:
           start: node server.js
-          wait-on: 'tcp:3000'         # <--- Alterado para validar apenas se a porta está aberta
+          wait-on: 'http://localhost:3000/health'
           browser: electron

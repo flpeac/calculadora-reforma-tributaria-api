@@ -3,6 +3,11 @@ const app = express();
 
 app.use(express.json());
 
+// Rota de Health Check para a esteira e monitoramento
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: "UP" });
+});
+
 // Função auxiliar estrita para conversão numérica
 const toNumber = (val) => {
     if (val === undefined || val === null || val === '') return NaN;
