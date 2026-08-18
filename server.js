@@ -20,6 +20,11 @@ const baseValida = (valor) => {
     return valor > 0 ? valor : 0;
 };
 
+// Validação de alíquotas e redutores (Devem estar estritamente entre 0% e 100%)
+const aliquotaValida = (valor) => {
+    return valor >= 0 && valor <= 100;
+};
+
 // ENDPOINT PRINCIPAL DE CÁLCULO
 app.post('/api/calcular-tributos', (req, res) => {
     const { 
@@ -53,6 +58,9 @@ app.post('/api/calcular-tributos', (req, res) => {
             if (vP <= 0) {
                 return res.status(422).json({ erro: "Preço de venda deve ser maior que zero." });
             }
+            if (!aliquotaValida(vCbs) || !aliquotaValida(vIbs)) {
+                return res.status(422).json({ erro: "As alíquotas de CBS e IBS devem estar entre 0% e 100%." });
+            }
 
             const base = vP;
             resultado.baseCBS_IBS = Number(base.toFixed(2));
@@ -70,6 +78,9 @@ app.post('/api/calcular-tributos', (req, res) => {
             }
             if (vP <= 0) {
                 return res.status(422).json({ erro: "Preço de venda deve ser maior que zero." });
+            }
+            if (!aliquotaValida(vIs)) {
+                return res.status(422).json({ erro: "A alíquota do Imposto Seletivo (IS) deve estar entre 0% e 100%." });
             }
 
             const base = vP;
@@ -90,6 +101,12 @@ app.post('/api/calcular-tributos', (req, res) => {
             }
             if (vP <= 0) {
                 return res.status(422).json({ erro: "Preço de venda deve ser maior que zero." });
+            }
+            if (!aliquotaValida(vCbs) || !aliquotaValida(vIbs)) {
+                return res.status(422).json({ erro: "As alíquotas de CBS e IBS devem estar entre 0% e 100%." });
+            }
+            if (!aliquotaValida(vCbsRed) || !aliquotaValida(vIbsRed)) {
+                return res.status(422).json({ erro: "Os percentuais de redução devem estar entre 0% e 100%." });
             }
 
             const base = vP;
@@ -114,6 +131,9 @@ app.post('/api/calcular-tributos', (req, res) => {
             if (isNaN(vP) || isNaN(vCbs) || isNaN(vIbs) || isNaN(vAcres) || isNaN(vTrib)) {
                 return res.status(400).json({ erro: "Parâmetros numéricos obrigatórios ausentes ou inválidos." });
             }
+            if (!aliquotaValida(vCbs) || !aliquotaValida(vIbs)) {
+                return res.status(422).json({ erro: "As alíquotas de CBS e IBS devem estar entre 0% e 100%." });
+            }
 
             // Regra da Base Composta: (P. Venda + Acréscimos) - Tributos
             const baseCalculada = (vP + vAcres) - vTrib;
@@ -133,6 +153,9 @@ app.post('/api/calcular-tributos', (req, res) => {
 
             if (isNaN(vP) || isNaN(vIs) || isNaN(vAcres) || isNaN(vTrib)) {
                 return res.status(400).json({ erro: "Parâmetros numéricos obrigatórios ausentes ou inválidos." });
+            }
+            if (!aliquotaValida(vIs)) {
+                return res.status(422).json({ erro: "A alíquota do Imposto Seletivo (IS) deve estar entre 0% e 100%." });
             }
 
             const baseCalculada = (vP + vAcres) - vTrib;
@@ -154,6 +177,12 @@ app.post('/api/calcular-tributos', (req, res) => {
 
             if (isNaN(vP) || isNaN(vCbs) || isNaN(vIbs) || isNaN(vCbsRed) || isNaN(vIbsRed) || isNaN(vAcres) || isNaN(vTrib)) {
                 return res.status(400).json({ erro: "Parâmetros numéricos obrigatórios ausentes ou inválidos." });
+            }
+            if (!aliquotaValida(vCbs) || !aliquotaValida(vIbs)) {
+                return res.status(422).json({ erro: "As alíquotas de CBS e IBS devem estar entre 0% e 100%." });
+            }
+            if (!aliquotaValida(vCbsRed) || !aliquotaValida(vIbsRed)) {
+                return res.status(422).json({ erro: "Os percentuais de redução devem estar entre 0% e 100%." });
             }
 
             const baseCalculada = (vP + vAcres) - vTrib;

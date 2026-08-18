@@ -468,9 +468,9 @@ Esta documentação detalha todos os cenários de teste automatizados de regras 
 
 <br>
 
-### 📌 [Cenário 18] - Borda - Alíquotas Negativas (Comportamento do Motor)
+### 📌 [Cenário 18] - Borda - Validação de Alíquotas Negativas
 
-**Objetivo:** Validar o comportamento matemático do motor ao receber alíquotas negativas (crédito/estorno fiscal).
+**Objetivo:** Validar se a API bloqueia o envio de alíquotas negativas, retornando erro de regra de negócio.
 
 **Pré-Requisitos:** Servidor ativo em `http://localhost:3000`.
 
@@ -487,25 +487,26 @@ Esta documentação detalha todos os cenários de teste automatizados de regras 
       <b>1.</b> Enviar POST com <code>cenario: 'padrao'</code>, <code>pVenda: 100.00</code>, <code>cbs: -0.9</code>, <code>ibs: -0.1</code>.<br><br>
       <b>Resultado Esperado:</b>
       <ul>
-        <li>Status Code 200. Base: 100.00 | Vl. CBS: -0.90 | Vl. IBS: -0.10</li>
+        <li>Status Code 422 (Unprocessable Entity).</li>
+        <li>Mensagem de erro: `"As alíquotas de CBS e IBS devem estar entre 0% e 100%."`</li>
       </ul>
     </td>
     <td valign="top">
       <br>
-      <b>Funcionalidade:</b> Teste de Borda - Alíquotas Negativas<br>
-      &emsp;&emsp;<b>Cenário:</b> [Cenário 18] - Borda - Alíquotas Negativas<br>
+      <b>Funcionalidade:</b> Validação Defensiva - Alíquotas Negativas<br>
+      &emsp;&emsp;<b>Cenário:</b> [Cenário 18] - Borda - Alíquotas Negativas (Rejeição HTTP 422)<br>
       &emsp;&emsp;<b>Dado</b> que informo alíquotas negativas no payload<br>
-      &emsp;&emsp;<b>Quando</b> o motor calcula os tributos<br>
-      &emsp;&emsp;<b>Então</b> o sistema processa os valores negativos mantendo a integridade matemática<br>
+      &emsp;&emsp;<b>Quando</b> a requisição é submetida ao motor fiscal<br>
+      &emsp;&emsp;<b>Então</b> o sistema deve barrar a operação retornando Status 422 e mensagem de erro de domínio<br>
     </td>
   </tr>
 </table>
 
 <br>
 
-### 📌 [Cenário 19] - Borda - Alíquotas Abusivas Acima de 100% (> 100%)
+### 📌 [Cenário 19] - Borda - Validação de Alíquotas Acima de 100% (> 100%)
 
-**Objetivo:** Validar a resiliência do motor ao processar alíquotas extremas superiores a 100%.
+**Objetivo:** Validar se a API bloqueia o envio de alíquotas superiores a 100%, retornando erro de regra de negócio.
 
 **Pré-Requisitos:** Servidor ativo em `http://localhost:3000`.
 
@@ -522,16 +523,17 @@ Esta documentação detalha todos os cenários de teste automatizados de regras 
       <b>1.</b> Enviar POST com <code>cenario: 'padrao'</code>, <code>pVenda: 100.00</code>, <code>cbs: 150.00</code>, <code>ibs: 200.00</code>.<br><br>
       <b>Resultado Esperado:</b>
       <ul>
-        <li>Status Code 200. Base: 100.00 | Vl. CBS: 150.00 | Vl. IBS: 200.00</li>
+        <li>Status Code 422 (Unprocessable Entity).</li>
+        <li>Mensagem de erro: `"As alíquotas de CBS e IBS devem estar entre 0% e 100%."`</li>
       </ul>
     </td>
     <td valign="top">
       <br>
-      <b>Funcionalidade:</b> Teste de Borda - Alíquotas Acima de 100%<br>
-      &emsp;&emsp;<b>Cenário:</b> [Cenário 19] - Borda - Alíquotas Abusivas > 100%<br>
-      &emsp;&emsp;<b>Dado</b> que informo alíquotas superiores a 100%<br>
-      &emsp;&emsp;<b>Quando</b> a requisição é processada pela API<br>
-      &emsp;&emsp;<b>Então</b> o motor calcula o imposto proporcional sem interromper a execução<br>
+      <b>Funcionalidade:</b> Validação Defensiva - Alíquotas Acima de 100%<br>
+      &emsp;&emsp;<b>Cenário:</b> [Cenário 19] - Borda - Alíquotas Abusivas > 100% (Rejeição HTTP 422)<br>
+      &emsp;&emsp;<b>Dado</b> que informo alíquotas maiores que 100% no payload<br>
+      &emsp;&emsp;<b>Quando</b> a requisição é submetida ao motor fiscal<br>
+      &emsp;&emsp;<b>Então</b> o sistema deve barrar a operação retornando Status 422 e mensagem de erro de domínio<br>
     </td>
   </tr>
 </table>

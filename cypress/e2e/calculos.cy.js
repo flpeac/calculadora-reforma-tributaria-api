@@ -329,7 +329,7 @@ describe('Testes de Motor de Cálculo - Regras Fiscais e Fórmulas', () => {
         });
     });
 
-    // --- CENÁRIOS DE EXPLORAÇÃO DE BORDA: ALÍQUOTAS EXTREMAS, NEGATIVAS E ABUSIVAS (>100%) ---
+    // --- VALIDAÇÕES DE BORDA E EXCEÇÕES DE ALÍQUOTAS INVÁLIDAS ---
 
     it('[Cenário 17] - Borda - Alíquotas Quebradas e Decimais Complexas', () => {
         const payload = {
@@ -352,7 +352,7 @@ describe('Testes de Motor de Cálculo - Regras Fiscais e Fórmulas', () => {
         });
     });
 
-    it('[Cenário 18] - Borda - Alíquotas Negativas (Comportamento do Motor)', () => {
+    it('[Cenário 18] - Borda - Validação de Alíquotas Negativas (Rejeição HTTP 422)', () => {
         const payload = {
             cenario: 'padrao',
             pVenda: 100.00,
@@ -360,20 +360,13 @@ describe('Testes de Motor de Cálculo - Regras Fiscais e Fórmulas', () => {
             ibs: -0.1
         };
 
-        const esperado = {
-            cenario: 'padrao',
-            baseCBS_IBS: 100.00,
-            vlCBS: -0.90,
-            vlIBS: -0.10
-        };
-
-        tributosService.calcular(payload).then((response) => {
-            expect(response.status).to.eq(200);
-            validadorUtil.validarCalculo(response.body, esperado);
+        tributosService.calcular(payload, false).then((response) => {
+            expect(response.status, 'Status Code').to.eq(422);
+            expect(response.body.erro).to.eq("As alíquotas de CBS e IBS devem estar entre 0% e 100%.");
         });
     });
 
-    it('[Cenário 19] - Borda - Alíquotas Abusivas Acima de 100% (> 100%)', () => {
+    it('[Cenário 19] - Borda - Validação de Alíquotas Acima de 100% (Rejeição HTTP 422)', () => {
         const payload = {
             cenario: 'padrao',
             pVenda: 100.00,
@@ -381,16 +374,9 @@ describe('Testes de Motor de Cálculo - Regras Fiscais e Fórmulas', () => {
             ibs: 200.00
         };
 
-        const esperado = {
-            cenario: 'padrao',
-            baseCBS_IBS: 100.00,
-            vlCBS: 150.00,
-            vlIBS: 200.00
-        };
-
-        tributosService.calcular(payload).then((response) => {
-            expect(response.status).to.eq(200);
-            validadorUtil.validarCalculo(response.body, esperado);
+        tributosService.calcular(payload, false).then((response) => {
+            expect(response.status, 'Status Code').to.eq(422);
+            expect(response.body.erro).to.eq("As alíquotas de CBS e IBS devem estar entre 0% e 100%.");
         });
     });
 
