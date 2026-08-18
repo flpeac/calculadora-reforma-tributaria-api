@@ -11,7 +11,8 @@ Ter uma visão arquitetural e estruturada para garantir a confiabilidade da API,
 ## 🗺️ Visualização
 
 <div align="center">
-  <img width="1955" height="2447" alt="Reforma Tributária (2)" src="https://github.com/user-attachments/assets/6ad5f1bc-4343-4f12-9c3d-3f137efcc2fa" />
+  <img width="1945" height="2685" alt="Reforma Tributária (3)" src="https://github.com/user-attachments/assets/759c7975-7398-4c20-a146-5507b57bc97c" />
+
 
 </div>
 
