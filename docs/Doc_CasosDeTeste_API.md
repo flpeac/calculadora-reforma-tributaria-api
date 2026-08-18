@@ -1,12 +1,16 @@
-### 📌 Cenário: Status 200 - Sucesso
+# 📄 Documentação de Casos de Teste - Contratos e Status de API
 
-**Objetivo:** Validar se a API está rodando corretamente.
+Esta documentação detalha as validações de status codes, contratos e tratamento de exceções básicas da API da Reforma Tributária.
+
+---
+
+### 📌 Cenário: Status 200 - Sucesso Básico
+
+**Objetivo:** Validar se a API está rodando corretamente, respondendo com status 200 e tempo de resposta aceitável para requisições válidas.
 
 **Pré-Requisitos:**
 * **Ambiente:** Node.js instalado na máquina.
-* **Dependências:** Pacotes do projeto instalados (executar comando base no mesmo nível do `package.json`). 
-* **Serviço em Execução:** A API deve estar ativa localmente rodando o arquivo `server.js` (`http://localhost:3000`). 
-* **Framework de Teste:** Cypress configurado e pronto para execução (conforme arquivo `cypress.config.js`). 
+* **Serviço em Execução:** A API ativa localmente (`http://localhost:3000`).
 
 ---
 
@@ -19,45 +23,37 @@
     <td valign="top">
       <br>
       <b>1.</b> Iniciar a execução da API localmente.<br><br>
-      <b>2.</b> Através do Cypress (no arquivo <code>cypress/e2e/api_reforma.cy.js</code>), enviar uma requisição do tipo POST com o nome do cenário e um preço de venda para a rota principal ou rota de verificação (ex: <code>/</code> ou <code>/status</code>).<br><br>
+      <b>2.</b> Através do Cypress (no arquivo <code>contrato.cy.js</code>), enviar uma requisição POST para <code>/api/calcular-tributos</code> com um payload válido (cenario 'padrao', pVenda: 100, cbs: 1, ibs: 1).<br><br>
       <b>3.</b> Aguardar a resposta do servidor.<br><br>
       <b>Resultado Esperado:</b>
       <ul>
         <li>O servidor deve retornar o Status Code 200 (OK).</li>
-        <li>O tempo de resposta deve estar dentro do limite aceitável (opcional, dependendo do critério de aceite).</li>
+        <li>O tempo de resposta (duration) deve ser inferior a 500ms.</li>
       </ul>
     </td>
     <td valign="top">
       <br>
-      <b>Funcionalidade:</b> Disponibilidade da API (Health Check)<br>
-      &emsp;&emsp;Como um desenvolvedor ou analista de testes<br>
-      &emsp;&emsp;Quero enviar uma requisição para a rota de verificação<br>
-      &emsp;&emsp;Para validar se a API está rodando corretamente<br>
+      <b>Funcionalidade:</b> Disponibilidade e Sucesso Básico (Health/API)<br>
+      &emsp;&emsp;Como um analista de testes<br>
+      &emsp;&emsp;Quero enviar uma requisição válida para a API<br>
+      &emsp;&emsp;Para validar se o serviço responde com sucesso e baixa latência<br>
       <br>
-      <b>Contexto:</b><br>
-      &emsp;&emsp;<b>Dado</b> que o ambiente Node.js está instalado na máquina<br>
-      &emsp;&emsp;<b>E</b> as dependências do projeto estão instaladas<br>
-      &emsp;&emsp;<b>E</b> o framework Cypress está configurado para execução<br>
-      <br>
-      <b>Cenário:</b> Status 200 - Sucesso<br>
-      &emsp;&emsp;<b>Dado</b> que a API está ativa localmente rodando o arquivo "server.js" em "http://localhost:3000"<br>
-      &emsp;&emsp;<b>Quando</b> eu enviar uma requisição do tipo POST com o nome do cenário e um preço de venda para a rota principal "/"<br>
+      <b>Cenário:</b> Status 200 - Sucesso Básico<br>
+      &emsp;&emsp;<b>Dado</b> que a API está ativa em "http://localhost:3000"<br>
+      &emsp;&emsp;<b>Quando</b> eu enviar um POST com dados válidos de cálculo<br>
       &emsp;&emsp;<b>Então</b> o servidor deve retornar o Status Code 200<br>
-      &emsp;&emsp;<b>E</b> o tempo de resposta deve estar dentro do limite aceitável<br>
+      &emsp;&emsp;<b>E</b> o tempo de resposta deve ser menor que 500ms<br>
     </td>
   </tr>
 </table>
 
+---
 
-### 📌 Cenário: Status 400 - Bad Request
+### 📌 Cenário: Status 400 - Bad Request por Ausência de Dados
 
-**Objetivo:** Validar se a API irá retornar erro ao não enviar informações obrigatórias.
+**Objetivo:** Validar o contrato da API ao enviar uma requisição omitindo dados obrigatórios fundamentais (como o campo `cenario`).
 
-**Pré-Requisitos:**
-* **Ambiente:** Node.js instalado na máquina.
-* **Dependências:** Pacotes do projeto instalados (executar comando base no mesmo nível do `package.json`). 
-* **Serviço em Execução:** A API deve estar ativa localmente rodando o arquivo `server.js` (`http://localhost:3000`). 
-* **Framework de Teste:** Cypress configurado e pronto para execução (conforme arquivo `cypress.config.js`). 
+**Pré-Requisitos:** Servidor ativo em `http://localhost:3000`.
 
 ---
 
@@ -69,43 +65,35 @@
   <tr>
     <td valign="top">
       <br>
-      <b>1.</b> Iniciar a execução da API localmente.<br><br>
-      <b>2.</b> Através do Cypress (no arquivo <code>cypress/e2e/api_reforma.cy.js</code>), enviar uma requisição do tipo POST <b>sem</b> enviar o cenário e com preço de venda para a rota principal ou rota de verificação (ex: <code>/</code> ou <code>/status</code>).<br><br>
-      <b>3.</b> Aguardar a resposta do servidor.<br><br>
+      <b>1.</b> Enviar uma requisição POST enviando apenas dados parciais (ex: <code>pVenda: 100</code>, omitindo o <code>cenario</code>) para a API.<br><br>
+      <b>2.</b> Aguardar a resposta do servidor.<br><br>
       <b>Resultado Esperado:</b>
       <ul>
-        <li>O servidor deve retornar o Status Code 400 (Bad Request).</li>
+        <li>O servidor deve rejeitar a requisição retornando o Status Code 400 (Bad Request).</li>
       </ul>
     </td>
     <td valign="top">
       <br>
-      <b>Funcionalidade:</b> Validação de Dados da API<br>
-      &emsp;&emsp;Como um desenvolvedor ou analista de testes<br>
-      &emsp;&emsp;Quero enviar uma requisição omitindo dados obrigatórios<br>
-      &emsp;&emsp;Para validar se a API possui tratamento de erro adequado<br>
+      <b>Funcionalidade:</b> Validação de Contrato de Entrada<br>
+      &emsp;&emsp;Como um analista de testes<br>
+      &emsp;&emsp;Quero enviar uma requisição sem os dados obrigatórios do contrato<br>
+      &emsp;&emsp;Para garantir que a API proteja seus endpoints retornando Bad Request (400)<br>
       <br>
-      <b>Contexto:</b><br>
-      &emsp;&emsp;<b>Dado</b> que o ambiente Node.js está instalado na máquina<br>
-      &emsp;&emsp;<b>E</b> as dependências do projeto estão instaladas<br>
-      &emsp;&emsp;<b>E</b> o framework Cypress está configurado para execução<br>
-      <br>
-      <b>Cenário:</b> Status 400 - Bad Request<br>
-      &emsp;&emsp;<b>Dado</b> que a API está ativa localmente rodando o arquivo "server.js" em "http://localhost:3000"<br>
-      &emsp;&emsp;<b>Quando</b> eu enviar uma requisição do tipo POST sem o cenário e com o preço de venda para a rota principal "/"<br>
+      <b>Cenário:</b> Status 400 - Bad Request por Ausência de Dados<br>
+      &emsp;&emsp;<b>Dado</b> que a API está ativa<br>
+      &emsp;&emsp;<b>Quando</b> eu enviar um POST omitindo o campo cenário<br>
       &emsp;&emsp;<b>Então</b> o servidor deve retornar o Status Code 400<br>
     </td>
   </tr>
 </table>
 
+---
+
 ### 📌 Cenário: Status 404 - Caminho Desconhecido
 
-**Objetivo:** Validar se a API irá retornar erro ao enviar informações para rota inexistente.
+**Objetivo:** Validar se a API lida corretamente com rotas ou endpoints que não existem no mapeamento do servidor.
 
-**Pré-Requisitos:**
-* **Ambiente:** Node.js instalado na máquina.
-* **Dependências:** Pacotes do projeto instalados (executar comando base no mesmo nível do `package.json`). 
-* **Serviço em Execução:** A API deve estar ativa localmente rodando o arquivo `server.js` (`http://localhost:3000`). 
-* **Framework de Teste:** Cypress configurado e pronto para execução (conforme arquivo `cypress.config.js`). 
+**Pré-Requisitos:** Servidor ativo em `http://localhost:3000`.
 
 ---
 
@@ -117,9 +105,8 @@
   <tr>
     <td valign="top">
       <br>
-      <b>1.</b> Iniciar a execução da API localmente.<br><br>
-      <b>2.</b> Através do Cypress (no arquivo <code>cypress/e2e/api_reforma.cy.js</code>), enviar uma requisição do tipo POST para uma rota de verificação inexistente.<br><br>
-      <b>3.</b> Aguardar a resposta do servidor.<br><br>
+      <b>1.</b> Enviar uma requisição POST direcionada para uma rota inexistente (ex: utilizando o método de rota inexistente no serviço do Cypress).<br><br>
+      <b>2.</b> Aguardar a resposta do servidor.<br><br>
       <b>Resultado Esperado:</b>
       <ul>
         <li>O servidor deve retornar o Status Code 404 (Not Found).</li>
@@ -127,19 +114,14 @@
     </td>
     <td valign="top">
       <br>
-      <b>Funcionalidade:</b> Validação de Rotas da API<br>
-      &emsp;&emsp;Como um desenvolvedor ou analista de testes<br>
-      &emsp;&emsp;Quero enviar uma requisição para uma rota inexistente<br>
-      &emsp;&emsp;Para validar se a API responde com o erro de caminho não encontrado<br>
+      <b>Funcionalidade:</b> Validação de Mapeamento de Rotas<br>
+      &emsp;&emsp;Como um analista de testes<br>
+      &emsp;&emsp;Quero disparar uma requisição para um caminho de URL não mapeado<br>
+      &emsp;&emsp;Para validar se a API responde com status 404 Not Found<br>
       <br>
-      <b>Contexto:</b><br>
-      &emsp;&emsp;<b>Dado</b> que o ambiente Node.js está instalado na máquina<br>
-      &emsp;&emsp;<b>E</b> as dependências do projeto estão instaladas<br>
-      &emsp;&emsp;<b>E</b> o framework Cypress está configurado para execução<br>
-      <br>
-      <b>Cenário:</b> Status 404 - Caminho Desconhecido<br>
-      &emsp;&emsp;<b>Dado</b> que a API está ativa localmente rodando o arquivo "server.js" em "http://localhost:3000"<br>
-      &emsp;&emsp;<b>Quando</b> eu enviar uma requisição do tipo POST para uma rota de verificação inexistente<br>
+      <b>Cenário:</b> Status 404 - Caminho desconhecido<br>
+      &emsp;&emsp;<b>Dado</b> que a API está ativa<br>
+      &emsp;&emsp;<b>Quando</b> eu enviar um POST para uma rota inválida/inexistente<br>
       &emsp;&emsp;<b>Então</b> o servidor deve retornar o Status Code 404<br>
     </td>
   </tr>
