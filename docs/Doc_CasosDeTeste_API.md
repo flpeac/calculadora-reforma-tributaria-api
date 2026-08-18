@@ -126,3 +126,9 @@ Esta documentação detalha as validações de status codes, contratos e tratame
     </td>
   </tr>
 </table>
+
+---
+
+<div align="center">
+  <a href="../README.md">⬅️ Voltar para o Início (README)</a>
+</div>
