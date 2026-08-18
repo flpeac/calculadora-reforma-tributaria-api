@@ -8,10 +8,15 @@ Este documento serve como repositório central para o registro, evidência e aco
 *Copie o bloco abaixo para registrar um novo item:*
 
 > **Título:** [Resumo breve do defeito]
+> 
 > **Data:** [DD/MM/AAAA]
+> 
 > **Prioridade:** [Alta/Média/Baixa]
+> 
 > **Descrição:** [O que acontece vs. O que deveria acontecer]
+> 
 > **Payload:** [Código JSON do request]
+> 
 > **Evidências:** [Prints, logs ou links]
 
 ---
