@@ -1,6 +1,15 @@
-# 🚧 Projeto em construção - 🧮 Calculadora Reforma Tributária - API
+# 🧮 Calculadora Reforma Tributária - API
 
-API desenvolvida em Node.js para cálculo, simulação e validação das regras da Reforma Tributária, com suporte a testes automatizados usando Cypress.
+[![CI - API Reforma Tributária & Cypress](https://github.com/flpeac/calculadora-reforma-tributaria-api/actions/workflows/ci.yml/badge.svg)](https://github.com/flpeac/calculadora-reforma-tributaria-api/actions/workflows/ci.yml)
+
+API mockada em Node.js desenvolvida exclusivamente como ambiente de homologação para estudos de automação de testes com Cypress. O foco do projeto é a validação de contratos, exceções e cenários complexos de cálculo com base em versões iniciais das regras da Reforma Tributária *(nota: devido a atualizações recentes na legislação, os parâmetros fiscais vigentes podem diferir da lógica implementada)*, contando com pipeline de Integração Contínua (CI/CD) via GitHub Actions.
+
+---
+
+## 🚀 Acesse a Esteira de Testes
+Quer ver os testes rodando em tempo real na nuvem do GitHub? 
+1. Acesse a aba [GitHub Actions do Projeto](https://github.com/flpeac/calculadora-reforma-tributaria-api/actions).
+2. Se quiser disparar uma execução manual, basta clicar no botão **"Run workflow"**.
 
 ---
 
@@ -9,15 +18,9 @@ API desenvolvida em Node.js para cálculo, simulação e validação das regras 
 * **Node.js**: Versão `v20.x` ou superior
 * **npm**: Versão `10.x` ou superior
 * **Git**: Para clonar o repositório
-* **Terminal**: PowerShell (Windows) ou terminal integrado do VS Code
-
-Para verificar se possui o Node e o npm instalados, execute os seguintes comandos:
-```bash
-node -v
-npm -v
-```
 
 ---
+
 
 ## ⚙️ Passo a Passo de Instalação e Configuração
 
@@ -101,12 +104,19 @@ npx cypress run
 
 ```plaintext
 calculadora-reforma-tributaria-api/
+├── .github/
+│   └── workflows/
+│       └── ci.yml             # Pipeline de CI/CD (GitHub Actions)
 ├── cypress/
-│   ├── e2e/             # Suítes de testes automatizados (.cy.js)
-│   └── support/         # Arquivos de suporte e comandos customizados
-├── cypress.config.js    # Configurações globais do Cypress
-├── package.json         # Scripts do projeto e dependências
-└── README.md            # Documentação do projeto
+│   ├── e2e/ 
+│   │   ├── calculos.cy.js     # Cenários de regras de negócio e fórmulas
+│   │   └── contrato.cy.js     # Validações de status codes e exceções
+│   └── support/ 
+│       ├── services/          # Camada de serviço HTTP (API Client)
+│       └── utils/             # Helpers e validadores customizados
+├── server.js                  # Servidor Express da API
+├── package.json               # Dependências e scripts
+└── README.md                  # Documentação
 ```
 
 ---

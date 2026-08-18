@@ -208,7 +208,7 @@ describe('Testes de Motor de Cálculo - Regras Fiscais e Fórmulas', () => {
         });
     });
 
-    it('[Cenário 12] - Fórmula 2 - CBS/IBS - Sem Redução - P.Venda + (Acréscimo (Negativo) + Valor de Tributos', () => {
+    it('[Cenário 12] - Fórmula 2 - CBS/IBS - Sem Redução - P.Venda + (Acréscimo (Negativo) + Valor de Tributos)', () => {
         const payload = {
             cenario: 'padraoBase_2',
             pVenda: 12.90,
@@ -231,7 +231,7 @@ describe('Testes de Motor de Cálculo - Regras Fiscais e Fórmulas', () => {
         });
     });
 
-    it('[Cenário 13] - Fórmula 2 - CBS/IBS - Sem redução - P. Venda + (Acréscimo (Zerado) + Valor de Tributos', () => {
+    it('[Cenário 13] - Fórmula 2 - CBS/IBS - Sem redução - P. Venda + (Acréscimo (Zerado) + Valor de Tributos)', () => {
         const payload = {
             cenario: 'padraoBase_2',
             pVenda: 8.99,
@@ -254,7 +254,7 @@ describe('Testes de Motor de Cálculo - Regras Fiscais e Fórmulas', () => {
         });
     });
 
-    it('[Cenário 14] - Fórmula 2 - CBS/IBS - Sem redução - P. Venda + (Acréscimo (Zerado) + Valor de Tributos (Zerado)', () => {
+    it('[Cenário 14] - Fórmula 2 - CBS/IBS - Sem redução - P. Venda + (Acréscimo (Zerado) + Valor de Tributos (Zerado))', () => {
         const payload = {
             cenario: 'padraoBase_2',
             pVenda: 5.50,
@@ -269,6 +269,123 @@ describe('Testes de Motor de Cálculo - Regras Fiscais e Fórmulas', () => {
             baseCBS_IBS: 5.5,
             vlCBS: 0.05,
             vlIBS: 0.01
+        };
+
+        tributosService.calcular(payload).then((response) => {
+            expect(response.status).to.eq(200);
+            validadorUtil.validarCalculo(response.body, esperado);
+        });
+    });
+
+    // --- FÓRMULA 2: BASE COMPOSTA COM IMPOSTO SELETIVO (padraoBaseIS_2) ---
+
+    it('[Cenário 15] - Fórmula 2 - IS - Base Composta - P. Venda + Acréscimo + Tributos', () => {
+        const payload = {
+            cenario: 'padraoBaseIS_2',
+            pVenda: 100.00,
+            is: 15,
+            vlAcres: 20.00,
+            vlTribut: 10.00
+        };
+
+        const esperado = {
+            cenario: 'padraoBaseIS_2',
+            baseIS: 110.00,
+            vlIS: 16.50
+        };
+
+        tributosService.calcular(payload).then((response) => {
+            expect(response.status).to.eq(200);
+            validadorUtil.validarCalculo(response.body, esperado);
+        });
+    });
+
+    // --- FÓRMULA 2: BASE COMPOSTA COM REDUÇÃO PARCIAL (redBase_2) ---
+
+    it('[Cenário 16] - Fórmula 2 - CBS/IBS - Base Composta com Redução Parcial', () => {
+        const payload = {
+            cenario: 'redBase_2',
+            pVenda: 100.00,
+            cbs: 0.9,
+            ibs: 0.1,
+            cbsRed: 50,
+            ibsRed: 50,
+            vlAcres: 20.00,
+            vlTribut: 10.00
+        };
+
+        const esperado = {
+            cenario: 'redBase_2',
+            baseCBS_IBS: 110.00,
+            aliquotaCbsReduzida: 0.45,
+            aliquotaIbsReduzida: 0.05,
+            vlCBS: 0.50,
+            vlIBS: 0.06
+        };
+
+        tributosService.calcular(payload).then((response) => {
+            expect(response.status).to.eq(200);
+            validadorUtil.validarCalculo(response.body, esperado);
+        });
+    });
+
+    // --- CENÁRIOS DE EXPLORAÇÃO DE BORDA: ALÍQUOTAS EXTREMAS, NEGATIVAS E ABUSIVAS (>100%) ---
+
+    it('[Cenário 17] - Borda - Alíquotas Quebradas e Decimais Complexas', () => {
+        const payload = {
+            cenario: 'padrao',
+            pVenda: 123.45,
+            cbs: 1.25,
+            ibs: 0.35
+        };
+
+        const esperado = {
+            cenario: 'padrao',
+            baseCBS_IBS: 123.45,
+            vlCBS: 1.54,
+            vlIBS: 0.43
+        };
+
+        tributosService.calcular(payload).then((response) => {
+            expect(response.status).to.eq(200);
+            validadorUtil.validarCalculo(response.body, esperado);
+        });
+    });
+
+    it('[Cenário 18] - Borda - Alíquotas Negativas (Comportamento do Motor)', () => {
+        const payload = {
+            cenario: 'padrao',
+            pVenda: 100.00,
+            cbs: -0.9,
+            ibs: -0.1
+        };
+
+        const esperado = {
+            cenario: 'padrao',
+            baseCBS_IBS: 100.00,
+            vlCBS: -0.90,
+            vlIBS: -0.10
+        };
+
+        tributosService.calcular(payload).then((response) => {
+            expect(response.status).to.eq(200);
+            validadorUtil.validarCalculo(response.body, esperado);
+        });
+    });
+
+    it('[Cenário 19] - Borda - Alíquotas Abusivas Acima de 100% (> 100%)', () => {
+        const payload = {
+            cenario: 'padrao',
+            pVenda: 100.00,
+            cbs: 150.00,
+            ibs: 200.00
+        };
+
+        const esperado = {
+            cenario: 'padrao',
+            baseCBS_IBS: 100.00,
+            vlCBS: 150.00,
+            vlIBS: 200.00
         };
 
         tributosService.calcular(payload).then((response) => {
