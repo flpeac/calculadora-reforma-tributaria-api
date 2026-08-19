@@ -39,7 +39,7 @@ Para tornar o projeto escalável e de fácil manutenção, adotei as seguintes p
 
 ## 🚀 Acesse a Esteira de Testes
 Quer ver os testes rodando em tempo real na nuvem do GitHub? 
-1. Acesse a aba <a href="https://github.com/flpeac/calculadora-reforma-tributaria-api/actions" target="_blank" rel="noopener noreferrer">GitHub Actions do Projeto</a>.
+1. Acesse a aba <a href="https://github.com/flpeac/calculadora-reforma-tributaria-api/actions/workflows/ci.yml" target="_blank" rel="noopener noreferrer">GitHub Actions do Projeto</a>.
 2. Se quiser disparar uma execução manual, basta clicar no botão **"Run workflow"**.
 
 ---
