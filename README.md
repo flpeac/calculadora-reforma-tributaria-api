@@ -1,8 +1,39 @@
-# 🧮 Calculadora Reforma Tributária - API (Ambiente de Testes)
+# 🚀 API Automation: Calculadora de Reforma Tributária
 
 [![CI - API Reforma Tributária & Cypress](https://github.com/flpeac/calculadora-reforma-tributaria-api/actions/workflows/ci.yml/badge.svg)](https://github.com/flpeac/calculadora-reforma-tributaria-api/actions/workflows/ci.yml)
 
-API mockada em Node.js desenvolvida exclusivamente como ambiente de homologação para estudos de automação de testes com Cypress. O foco do projeto é a validação de contratos, exceções e cenários complexos de cálculo com base em versões iniciais das regras da Reforma Tributária *(nota: devido a atualizações recentes na legislação, os parâmetros fiscais vigentes podem diferir da lógica implementada)*, contando com pipeline de Integração Contínua (CI/CD) via GitHub Actions.
+Este projeto é um framework de automação de testes E2E desenvolvido para garantir a confiabilidade de uma API Node.js. O foco central não foi apenas a criação de testes, mas a **modelagem de qualidade** para regras fiscais complexas, aplicando conceitos de testes de contrato e integração contínua.
+
+---
+
+## 🧠 O Problema
+O desafio central deste projeto foi validar cálculos tributários variáveis em uma API, garantindo que alterações na regra de negócio não quebrem a integridade dos dados nem o contrato esperado (schema). 
+
+## 🛠 Escolhas Arquiteturais & Soluções
+Para tornar o projeto escalável e de fácil manutenção, adotei as seguintes práticas:
+
+*   **Arquitetura Modular:** Separei a camada de `services` (chamadas de API) dos arquivos de teste. Isso garante que, se o endpoint mudar, eu altero o serviço em um único lugar, não em múltiplos arquivos de teste.
+*   **Testes de Contrato:** Validação rigorosa de *status codes* e estrutura de JSON. Isso evita "falsos positivos" onde o teste passa, mas a estrutura da API mudou, quebrando o consumo por outros sistemas.
+*   **Pipeline de Qualidade:** Implementei CI/CD com GitHub Actions. Cada execução valida automaticamente o comportamento da API, garantindo que nenhuma regressão passe despercebida.
+
+## 📈 Resultados Alcançados
+*   **Escalabilidade:** Estrutura pronta para suportar novos cenários fiscais sem degradar a performance dos testes.
+*   **Rastreabilidade:** Documentação completa (Mapa Mental e Casos de Teste) que conecta o requisito de negócio diretamente ao código de teste.
+*   **Autonomia:** Ambiente configurado para permitir que qualquer pessoa entenda as regras fiscais mapeadas em minutos e valide a esteira em tempo real.
+
+## 📚 Documentação e Artefatos (QA)
+*   🧠 [Mapa Mental: Validações da API](docs/Doc_MapaMental.md)
+*   📄 [Documentação de Casos de Teste - Contratos](docs/Doc_CasosDeTeste_API.md)
+*   📄 [Documentação de Casos de Teste - Motor de Cálculo](docs/Doc_CasosDeTeste_C%C3%A1lculos.md)
+*   🕷️ [Registro de Bugs](docs/Doc_Bugs.md)
+
+---
+
+## 💻 Tech Stack
+*   **Test Runner:** Cypress
+*   **API Client:** Node.js / Express
+*   **CI/CD:** GitHub Actions
+*   **Language:** JavaScript
 
 ---
 
@@ -13,16 +44,9 @@ Quer ver os testes rodando em tempo real na nuvem do GitHub?
 
 ---
 
-## 📚 Documentação Técnica e Artefatos de QA
+<details>
+<summary><h3>⚙️ Como Rodar o Projeto Localmente</h3></summary>
 
-Para garantir a rastreabilidade e a qualidade do projeto, toda a modelagem e especificação de testes está documentada abaixo:
-
-* 🧠 <a href="https://github.com/flpeac/calculadora-reforma-tributaria-api/blob/main/docs/Doc_MapaMental.md" target="_blank" rel="noopener noreferrer">Mapa Mental: Validações da API - Reforma Tributária</a>
-* 📄 <a href="https://github.com/flpeac/calculadora-reforma-tributaria-api/blob/main/docs/Doc_CasosDeTeste_API.md" target="_blank" rel="noopener noreferrer">Documentação de Casos de Teste - Contratos e Status de API</a>
-* 📄 <a href="https://github.com/flpeac/calculadora-reforma-tributaria-api/blob/main/docs/Doc_CasosDeTeste_C%C3%A1lculos.md" target="_blank" rel="noopener noreferrer">Documentação de Casos de Teste - Motor de Cálculo e Regras Fiscais</a>
-* 🕷️ <a href="https://github.com/flpeac/calculadora-reforma-tributaria-api/blob/main/docs/Doc_Bugs.md" target="_blank" rel="noopener noreferrer">Registro de Bugs: Template para abertura e evidências de bugs</a>
-
----
 
 ## 📋 Pré-requisitos
 
